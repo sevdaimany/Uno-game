@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Scanner;
@@ -9,6 +10,7 @@ public class Game {
 
     private LinkedList<Card> cards;
     private ArrayList<Player> players;
+    private int numplayers;
 
     public LinkedList<Card> getCards() {
         return cards;
@@ -64,27 +66,27 @@ public class Game {
                 } else if (m == 3) {
                     if (turn == 0) {
                         playerTurn++;
-                        if (playerTurn == 4)
+                        if (playerTurn == numplayers)
                             playerTurn = 0;
                     } else if (turn == 1) {
                         playerTurn--;
                         if (playerTurn == -1)
-                            playerTurn = 3;
+                            playerTurn = numplayers-1;
                     }
                     m = 1;
                 }
 
                 if (turn == 0) {
                     playerTurn++;
-                    if (playerTurn == 4)
+                    if (playerTurn == numplayers)
                         playerTurn = 0;
                 } else if (turn == 1) {
                     playerTurn--;
                     if (playerTurn == -1)
-                        playerTurn = 3;
+                        playerTurn = numplayers-1;
                 }
 
-                TimeUnit.SECONDS.sleep(3);
+                TimeUnit.SECONDS.sleep(4);
                 clearScreen();
                 playground.printPlayground(players, cards, turn, playerTurn);
 
@@ -187,8 +189,10 @@ public class Game {
 
     public int numPlayers() {
         Scanner sc = new Scanner(System.in);
-        System.out.println("\t\t\t\t\t\t\t\t\t\t   " + "Please choose a number of players:(4 < n < 6)");
+        clearScreen();
+        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   " + "Please choose a number of players:(2 < n < 6)");
         int numPlayer = sc.nextInt();
+        this.numplayers = numPlayer;
         return numPlayer;
     }
 
@@ -396,10 +400,61 @@ public class Game {
                     || players.get(0).getCards().get(i).getBlackActive() == 1)
                 return true;
         }
-        
+
         if (check())
-        return true;
+            return true;
 
         return false;
+    }
+
+    public boolean endOfGame() {
+        int numPlayer = players.size();
+        for (int i = 0; i < numPlayer; i++) {
+            if (players.get(i).getCards().size() == 0)
+                return true;
+        }
+        return false;
+    }
+
+    public void winner() {
+        ArrayList<Integer> scores = new ArrayList<Integer>();
+        int numPlayers = players.size();
+        for (int i = 0; i < numPlayers; i++) {
+            int numPlayerCards = players.get(i).getCards().size();
+            int sum = 0;
+            for (int j = 0; j < numPlayerCards; j++) {
+                sum += scores(players.get(i).getCards().get(j));
+            }
+            scores.add(sum);
+        }
+        printScores(scores);
+        ArrayList<Integer> numwinners = new ArrayList<Integer>();
+        int max = Collections.max(scores);
+        for (int i = 0; i < numPlayers; i++) {
+            if (max == scores.get(i))
+                numwinners.add(i);
+        }
+        for (int i = 0; i < numwinners.size(); i++) {
+            System.out.print("player" + (i + 1) + ", ");
+        }
+        System.out.println("win the game.");
+    }
+
+    public int scores(Card card) {
+        int score = 0;
+        if (card.getDigital() >= 0)
+            score = card.getDigital();
+        else if (card.getBlackActive() == 1 || card.getBlackActive4() == 1)
+            score = 50;
+        else
+            score = 20;
+
+        return score;
+    }
+
+    public void printScores(ArrayList<Integer> scores) {
+        for (int i = 0; i < players.size(); i++) {
+            System.out.println("Player" + (i + 1) + " scores: " + scores.get(i));
+        }
     }
 }

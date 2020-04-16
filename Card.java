@@ -1,7 +1,7 @@
 
 public class Card {
     private final int digital;
-    private  final String color;
+    private  String color;
     private final int skip;
     private final int takeTwo;
     private final int reverse;
@@ -44,6 +44,10 @@ public class Card {
 
     public int getBlackActive4() {
         return blackActive4;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 
 }

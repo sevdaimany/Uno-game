@@ -1,8 +1,8 @@
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -42,12 +42,68 @@ public class Game {
         play(playerTurn);
         playground.printPlayground(players, cards, turn, playerTurn);
 
-        int m = 1;
+        int m = 0;
 
         while (true) {
             try {
-                for (int i = 0; i < m; i++) {
-                    play(playerTurn);
+                /*
+                 * for (int i = 0; i < m; i++) { play(playerTurn); clearScreen();
+                 * playground.printPlayground(players, cards, turn, playerTurn); }
+                 */
+                if (m > 10 && m < 20) {
+                    for (int i = 0; i < 4 * (m - 10); i++) {
+                        players.get(playerTurn).addCard(cards.getLast());
+                        cards.removeLast();
+                    }
+                    if (turn == 0) {
+                        playerTurn++;
+                        if (playerTurn == numplayers)
+                            playerTurn = 0;
+                    } else if (turn == 1) {
+                        playerTurn--;
+                        if (playerTurn == -1)
+                            playerTurn = numplayers - 1;
+                    }
+                    m = 1;
+
+                    clearScreen();
+                    playground.printPlayground(players, cards, turn, playerTurn);
+                } else if (m > 20 && m < 30) {
+                    for (int i = 0; i < 2 * (m - 20); i++) {
+                        players.get(playerTurn).addCard(cards.getLast());
+                        cards.removeLast();
+                    }
+
+                    clearScreen();
+                    playground.printPlayground(players, cards, turn, playerTurn);
+                } else if (m == 4) {
+                    for (int i = 0; i < 4; i++) {
+                        players.get(playerTurn).addCard(cards.getLast());
+                        cards.removeLast();
+                    }
+                    if (turn == 0) {
+                        playerTurn++;
+                        if (playerTurn == numplayers)
+                            playerTurn = 0;
+                    } else if (turn == 1) {
+                        playerTurn--;
+                        if (playerTurn == -1)
+                            playerTurn = numplayers - 1;
+                    }
+                    m = 1;
+
+                    clearScreen();
+                    playground.printPlayground(players, cards, turn, playerTurn);
+                }
+
+                if (m == 5) {
+                    for (int i = 0; i < 2; i++) {
+                        players.get(playerTurn).addCard(cards.getLast());
+                        cards.removeLast();
+                    }
+
+                    clearScreen();
+                    playground.printPlayground(players, cards, turn, playerTurn);
                 }
 
                 m = choose(playerTurn);
@@ -64,6 +120,7 @@ public class Game {
                     cards.removeLast();
                     m = 1;
                 } else if (m == 3) {
+
                     if (turn == 0) {
                         playerTurn++;
                         if (playerTurn == numplayers)
@@ -71,7 +128,7 @@ public class Game {
                     } else if (turn == 1) {
                         playerTurn--;
                         if (playerTurn == -1)
-                            playerTurn = numplayers-1;
+                            playerTurn = numplayers - 1;
                     }
                     m = 1;
                 }
@@ -83,12 +140,17 @@ public class Game {
                 } else if (turn == 1) {
                     playerTurn--;
                     if (playerTurn == -1)
-                        playerTurn = numplayers-1;
+                        playerTurn = numplayers - 1;
                 }
 
                 TimeUnit.SECONDS.sleep(4);
                 clearScreen();
                 playground.printPlayground(players, cards, turn, playerTurn);
+
+                if (endOfGame()) {
+                    winner();
+                    return;
+                }
 
             } catch (InterruptedException e) {
                 System.out.println("Error");
@@ -190,7 +252,7 @@ public class Game {
     public int numPlayers() {
         Scanner sc = new Scanner(System.in);
         clearScreen();
-        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   " + "Please choose a number of players:(2 < n < 6)");
+        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   " +ConsoleColors.YELLOW_BOLD_BRIGHT+ "Please choose a number of players:(2 < n < 6)"+ConsoleColors.RESET);
         int numPlayer = sc.nextInt();
         this.numplayers = numPlayer;
         return numPlayer;
@@ -203,10 +265,10 @@ public class Game {
                 return -1;
 
             Scanner sc = new Scanner(System.in);
-            System.out.println("please choose your card: ");
+            System.out.println(ConsoleColors.WHITE_BOLD_BRIGHT+"please choose your card: "+ConsoleColors.RESET);
             int choose = sc.nextInt();
             while (!check(choose - 1)) {
-                System.out.println("please choose another card: ");
+                System.out.println(ConsoleColors.WHITE_BOLD_BRIGHT+"please choose another card: "+ConsoleColors.RESET);
                 choose = sc.nextInt();
             }
 
@@ -214,32 +276,72 @@ public class Game {
             players.get(0).getCards().remove(choose - 1);
             if (cards.getFirst().getBlackActive4() == 1 || cards.getFirst().getBlackActive() == 1) {
                 sc.nextLine();
-                System.out.println("Please choose a color: ");
+                System.out.println(ConsoleColors.WHITE_BOLD_BRIGHT+"Please choose a color: "+ConsoleColors.RESET);
                 String color = sc.nextLine();
                 cards.getFirst().setColor(color);
             }
 
             if (cards.getFirst().getReverse() == 1)
                 return 0;
-            else if ((cards.getFirst().getBlackActive4() == 1 && cards.get(1).getBlackActive4() == 1)
-                    || (cards.getFirst().getTakeTwo() == 1 && cards.get(1).getTakeTwo() == 1))
-                return 2;
-            else if (cards.getFirst().getSkip() == 1)
+            else if (cards.getFirst().getBlackActive4() == 1 && cards.get(1).getBlackActive4() == 1) {
+                int n = 10;
+                Iterator<Card> it5 = cards.iterator();
+                while (it5.hasNext()) {
+                    if (it5.next().getBlackActive4() == 1) {
+                        n++;
+                    } else
+                        break;
+                }
+                return n;
+            } else if (cards.getFirst().getTakeTwo() == 1 && cards.get(1).getTakeTwo() == 1) {
+                int n = 20;
+                Iterator<Card> it6 = cards.iterator();
+                while (it6.hasNext()) {
+                    if (it6.next().getTakeTwo() == 1) {
+                        n++;
+                    } else
+                        break;
+                }
+                return n;
+            } else if (cards.getFirst().getSkip() == 1)
                 return 3;
+            else if (cards.getFirst().getTakeTwo() == 1) {
+                return 5;
+            } else if (cards.getFirst().getBlackActive4() == 1)
+                return 4;
             else
                 return 1;
 
         } else {
             Iterator<Card> it = players.get(player).getCards().iterator();
+            Random random = new Random();
+            int rand = random.nextInt(4);
+            String color = "red";
+            if (rand == 0)
+                color = "red";
+            else if (rand == 1)
+                color = "blue";
+            else if (rand == 2)
+                color = "green";
+            else if (rand == 3)
+                color = "yellow";
 
             if (cards.getFirst().getBlackActive4() == 1) {
                 while (it.hasNext()) {
                     Card card = it.next();
                     if (card.getBlackActive4() == 1) {
+                        int n = 10;
                         cards.addFirst(card);
                         players.get(player).getCards().remove(card);
-                        cards.getFirst().setColor("red");
-                        return 2;
+                        cards.getFirst().setColor(color);
+                        Iterator<Card> it5 = cards.iterator();
+                        while (it5.hasNext()) {
+                            if (it5.next().getBlackActive4() == 1) {
+                                n++;
+                            } else
+                                break;
+                        }
+                        return n;
                     }
 
                 }
@@ -248,9 +350,17 @@ public class Game {
                 while (it.hasNext()) {
                     Card card = it.next();
                     if (card.getTakeTwo() == 1) {
+                        int n = 20;
                         cards.addFirst(card);
                         players.get(player).getCards().remove(card);
-                        return 2;
+                        Iterator<Card> it6 = cards.iterator();
+                        while (it6.hasNext()) {
+                            if (it6.next().getTakeTwo() == 1) {
+                                n++;
+                            } else
+                                break;
+                        }
+                        return n;
                     }
 
                 }
@@ -299,6 +409,8 @@ public class Game {
                         else if (cards.getFirst().getSkip() == 1)
                             return 3;
 
+                        else if (cards.getFirst().getTakeTwo() == 1)
+                            return 5;
                         else
                             return 1;
                     }
@@ -310,7 +422,7 @@ public class Game {
                 if (card.getBlackActive() == 1) {
                     cards.addFirst(card);
                     players.get(player).getCards().remove(card);
-                    cards.getFirst().setColor("red");
+                    cards.getFirst().setColor(color);
                     return 1;
                 }
             }
@@ -321,8 +433,8 @@ public class Game {
                 if (card.getBlackActive4() == 1) {
                     cards.addFirst(card);
                     players.get(player).getCards().remove(card);
-                    cards.getFirst().setColor("red");
-                    return 1;
+                    cards.getFirst().setColor(color);
+                    return 4;
                 }
             }
 
@@ -429,15 +541,20 @@ public class Game {
         }
         printScores(scores);
         ArrayList<Integer> numwinners = new ArrayList<Integer>();
-        int max = Collections.max(scores);
+        int min = Collections.min(scores);
         for (int i = 0; i < numPlayers; i++) {
-            if (max == scores.get(i))
+            if (min == scores.get(i))
                 numwinners.add(i);
         }
+
+        
+        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   " );
         for (int i = 0; i < numwinners.size(); i++) {
-            System.out.print("player" + (i + 1) + ", ");
+            System.out.print(ConsoleColors.PURPLE_BOLD_BRIGHT +"player" + (numwinners.get(i) + 1) + ", ");
         }
-        System.out.println("win the game.");
+        System.out.println("win the game." + ConsoleColors.RESET);
+        Scanner sc = new Scanner(System.in);
+        sc.nextLine();
     }
 
     public int scores(Card card) {
@@ -453,8 +570,10 @@ public class Game {
     }
 
     public void printScores(ArrayList<Integer> scores) {
+        clearScreen();
         for (int i = 0; i < players.size(); i++) {
-            System.out.println("Player" + (i + 1) + " scores: " + scores.get(i));
+            System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   " +ConsoleColors.CYAN_BOLD_BRIGHT +"Player" + (i + 1) + " scores: " + scores.get(i) + ConsoleColors.RESET);
         }
     }
+
 }

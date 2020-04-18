@@ -12,13 +12,13 @@ public class Playground {
             space = "\t\t\t\t\t\t\t\t\t\t  ";
         }
         if (n == 1) {
-            System.out.println("\t\t\t\t\t\t\t\t\t\t draw pile cards:\n");
+            System.out.println(ConsoleColors.YELLOW_BOLD_BRIGHT+"\t\t\t\t\t\t\t\t\t\t draw pile cards:\n"+ConsoleColors.RESET);
             if(card.getBlackActive()==1 || card.getBlackActive4() == 1){
-            System.out.println("\t\t\t\t\t\t\t\t\t\t color is red\n");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t color is "+card.getColor()+"\n");
             }
         }
         if (n == 0) {
-            System.out.println("\t\t\t\t     "+ numCard + ")\n");
+            System.out.println("\t\t\t\t     "+ConsoleColors.WHITE_BOLD_BRIGHT+ numCard + ")"+ConsoleColors.RESET);
         }
         if (card.getDigital() >= 0) {
 
@@ -103,7 +103,7 @@ public class Playground {
         Iterator<Player> itPlayer = players.iterator();
 
         System.out.println("\n");
-        System.out.println("\t\t\t\t\t Player1 cards: \n");
+        System.out.println(ConsoleColors.WHITE_BOLD_BRIGHT +"\t\t\t\t\t Player1 cards: \n" + ConsoleColors.RED_BOLD_BRIGHT);
         int n = 1;
         while (it.hasNext()) {
             printCard(it.next(), 0, n);
@@ -118,17 +118,17 @@ public class Playground {
         itPlayer.next();
         System.out.print("\t\t\t\t\t ");
         while (itPlayer.hasNext()) {
-            System.out.print("player" + k + " cards: " + itPlayer.next().getCards().size());
+            System.out.print(ConsoleColors.GREEN_BOLD_BRIGHT +"player" + k + " cards: " + itPlayer.next().getCards().size() + ConsoleColors.RESET);
             k++;
-            System.out.print("\t\t");
+            System.out.print("\t\t\t");
         }
         System.out.println("\n");
         if (turn == 0)
-            System.out.println("\t\t\t\t\t\t\t\t\t " + "clockwise");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t " +ConsoleColors.BLUE_BOLD_BRIGHT+ "clockwise"+ConsoleColors.RESET);
         else if (turn == 1)
-            System.out.println("\t\t\t\t\t\t\t\t\t " + "anticlockwise");
+            System.out.println("\t\t\t\t\t\t\t\t\t\t " + ConsoleColors.BLUE_BOLD_BRIGHT+"anticlockwise"+ConsoleColors.RESET);
 
-        System.out.println("\t\t\t\t\t\t\t\t\t " + "player" + (playerTurn + 1) + " turn: ");
+        System.out.println("\n\t\t\t\t\t\t\t\t\t\t " +ConsoleColors.YELLOW_BOLD_BRIGHT+ "player" + (playerTurn + 1) + " turn: " + ConsoleColors.RESET);
 
     }
 

@@ -1,7 +1,16 @@
 import java.util.Scanner;
 
+/**
+ * this class represent the uno game
+ * 
+ * @author sevda imany
+ * @version 0.0
+ */
 public class Uno{
 
+    
+    
+   
     public static void main(final String[] args){
       
          Game game;
@@ -21,6 +30,9 @@ public class Uno{
         }
     }
 
+    /**
+     * this method prints menu
+     */
     public static void menu(){
         clearScreen();
         System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"Please choose:"+ConsoleColors.RESET);

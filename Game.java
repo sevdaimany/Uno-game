@@ -6,20 +6,40 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Game class represet a game it holds a list of draw pile cards and a list of
+ * players
+ * 
+ * @author sevda imany
+ * @version 0.0
+ */
 public class Game {
 
     private LinkedList<Card> cards;
     private ArrayList<Player> players;
     private int numplayers;
 
+    /**
+     * get draw pile cards
+     * 
+     * @return LinkedList<Card>
+     */
     public LinkedList<Card> getCards() {
         return cards;
     }
 
+    /**
+     * get a list of all players
+     * 
+     * @return ArrayList<Player>
+     */
     public ArrayList<Player> getPlayers() {
         return players;
     }
 
+    /**
+     * creat a new game
+     */
     public Game() {
         cards = new LinkedList<Card>();
         players = new ArrayList<Player>();
@@ -30,6 +50,11 @@ public class Game {
         System.out.flush();
     }
 
+    /**
+     * this method play uno game
+     * 
+     * @param choose 1 for playing online and 2 for playing with friends
+     */
     public void game(int choose) {
         Playground playground = new Playground();
         int playerTurn = 0;
@@ -39,17 +64,20 @@ public class Game {
             turn = 1;
         else if (cards.getFirst().getSkip() == 1)
             playerTurn++;
-        play(playerTurn);
+
+        else if (cards.getFirst().getTakeTwo() == 1) {
+            for (int i = 0; i < 2; i++) {
+                players.get(playerTurn).getCards().add(cards.getLast());
+                cards.removeLast();
+            }
+        }
         playground.printPlayground(players, cards, turn, playerTurn, choose);
 
         int m = 0;
 
         while (true) {
             try {
-                /*
-                 * for (int i = 0; i < m; i++) { play(playerTurn); clearScreen();
-                 * playground.printPlayground(players, cards, turn, playerTurn); }
-                 */
+
                 if (m > 10 && m < 20) {
                     for (int i = 0; i < 4 * (m - 10); i++) {
                         players.get(playerTurn).getCards().add(cards.getLast());
@@ -106,7 +134,7 @@ public class Game {
                     playground.printPlayground(players, cards, turn, playerTurn, choose);
                 }
 
-                m = choose(playerTurn,choose);
+                m = choose(playerTurn, choose);
 
                 if (m == 0) {
                     if (turn == 0)
@@ -158,6 +186,11 @@ public class Game {
         }
     }
 
+    /**
+     * this method is for starting a game and add players to players list it shuffle
+     * all cards and give each player 7 cards and check that the first draw pile
+     * card dont be wild!
+     */
     private void startGame() {
         addAllCards();
         Collections.shuffle(cards);
@@ -178,6 +211,10 @@ public class Game {
         }
     }
 
+    /**
+     * this method is for the first of a game and add 108 cards of a game to the
+     * cards list
+     */
     private void addAllCards() {
         for (int j = 0; j < 2; j++) {
             for (int i = 1; i < 10; i++) {
@@ -249,6 +286,11 @@ public class Game {
         }
     }
 
+    /**
+     * this method ask user that wants to play with how many player
+     * 
+     * @return number of players
+     */
     private int numPlayers() {
         Scanner sc = new Scanner(System.in);
         clearScreen();
@@ -259,6 +301,21 @@ public class Game {
         return numPlayer;
     }
 
+    /**
+     * this method choose a card for each player
+     * 
+     * @param player
+     * @param chooseMenu if 1 play online and if 2 play with friends and ask each
+     *                   player which card wants to choose
+     * @return -1 if player can not play with his cards , 0 if the chosen card is
+     *         reverse, 3 if the chosen card is skip ,4 if the chosen card is
+     *         wildcard+4 and didnt com on another +4 5 if the chosen card is +2 and
+     *         didnt come on another +2 , a number between 20 and 30 if the chosen
+     *         card is +2 and come on another +2 (a num of +2 come on each other is
+     *         n -20) a number between 10 and 20 if the chosen cards is +4 and come
+     *         on another +4 (a num of +4 come on each other is (n -10) ) otherwise
+     *         return 1
+     */
     private int choose(int player, int chooseMenu) {
 
         if (chooseMenu == 1) {
@@ -394,31 +451,19 @@ public class Game {
 
                 return -1;
             }
-        }
-        else{
+        } else {
             int n = playYourTurn(player);
             return n;
         }
     }
 
-    private void play(int turn) {
-
-        if (cards.getFirst().getBlackActive4() == 1) {
-            for (int i = 0; i < 4; i++) {
-                players.get(turn).getCards().add(cards.getLast());
-                cards.removeLast();
-            }
-        }
-
-        else if (cards.getFirst().getTakeTwo() == 1) {
-            for (int i = 0; i < 2; i++) {
-                players.get(turn).getCards().add(cards.getLast());
-                cards.removeLast();
-            }
-        }
-
-    }
-
+  
+    /**
+     * this method check if the chosen card is acceptable or not
+     * @param numCard
+     * @param player
+     * @return {@code true} if the chosen card is acceptable otherwise return {@code false} 
+     */
     private boolean check(int numCard, int player) {
         if (players.get(player).getCards().get(numCard).getBlackActive4() == 1
                 && cards.getFirst().getBlackActive4() == 1)
@@ -446,6 +491,11 @@ public class Game {
 
     }
 
+    /**
+     * this method check if the player can play with his cards or not
+     * @param player
+     * @return {@code true} if the player has a choice to play otherwise return {@code false}
+     */
     private boolean check(int player) {
         int n = players.get(player).getCards().size();
         for (int i = 0; i < n; i++) {
@@ -465,6 +515,11 @@ public class Game {
         return false;
     }
 
+   /**
+     * this method check if the player can play with his cards or not
+     * @param player
+     * @return {@code true} if the player has a choice to play otherwise return {@code false}
+     */
     private boolean checkPlay(int player) {
         int n = players.get(player).getCards().size();
         for (int i = 0; i < n; i++) {
@@ -479,6 +534,10 @@ public class Game {
         return false;
     }
 
+    /**
+     * this method check if the game ends or nor
+     * @return {@code true} if the game ends otherwise {@code false}
+     */
     private boolean checkEndOfGame() {
         int numPlayer = players.size();
         for (int i = 0; i < numPlayer; i++) {
@@ -488,6 +547,9 @@ public class Game {
         return false;
     }
 
+    /**
+     * this method sum all players scores and print winner
+     */
     private void winner() {
         ArrayList<Integer> scores = new ArrayList<Integer>();
         int numPlayers = players.size();
@@ -507,7 +569,7 @@ public class Game {
                 numwinners.add(i);
         }
 
-        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   ");
+        System.out.print("\n\n\t\t\t\t\t\t\t\t\t\t   ");
         for (int i = 0; i < numwinners.size(); i++) {
             System.out.print(ConsoleColors.PURPLE_BOLD_BRIGHT + "player" + (numwinners.get(i) + 1) + ", ");
         }
@@ -516,6 +578,11 @@ public class Game {
         sc.nextLine();
     }
 
+    /**
+     * this method give each card a score
+     * @param card
+     * @return score of given card 
+     */
     private int scores(Card card) {
         int score = 0;
         if (card.getDigital() >= 0)
@@ -528,6 +595,10 @@ public class Game {
         return score;
     }
 
+    /**
+     * this method print score of all players at the end of the game
+     * @param scores
+     */
     private void printScores(ArrayList<Integer> scores) {
         clearScreen();
         for (int i = 0; i < players.size(); i++) {
@@ -536,6 +607,18 @@ public class Game {
         }
     }
 
+    /**
+     * this method ask player to choose a card to play and check that the card be acceptable
+     * @param player
+     * @return -1 if player can not play with his cards , 0 if the chosen card is
+     *         reverse, 3 if the chosen card is skip ,4 if the chosen card is
+     *         wildcard+4 and didnt com on another +4 5 if the chosen card is +2 and
+     *         didnt come on another +2 , a number between 20 and 30 if the chosen
+     *         card is +2 and come on another +2 (a num of +2 come on each other is
+     *         n -20) a number between 10 and 20 if the chosen cards is +4 and come
+     *         on another +4 (a num of +4 come on each other is (n -10) ) otherwise
+     *         return 1
+     */
     private int playYourTurn(int player) {
         if (checkPlay(player) == false)
             return -1;

@@ -2,7 +2,20 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+/**
+ * this class represent a playground in the game
+ * 
+ * @author sevda imany
+ * @version 0.0
+ */
 public class Playground {
+    
+    /** 
+     * this method print a card
+     * @param card
+     * @param n 0 if the card is player card and 1 if is the draw pile card
+     * @param numCard
+     */
     public void printCard(Card card, int n, int numCard) {
 
         String space = "";
@@ -80,6 +93,11 @@ public class Playground {
         }
     }
 
+    
+    /** 
+     * this method change console's color
+     * @param color
+     */
     public void changeColor(String color) {
 
         if (color.equals("red"))
@@ -99,6 +117,15 @@ public class Playground {
 
     }
 
+    
+    /** 
+     * this method print a playground
+     * @param players a list of all players
+     * @param cards list of draw pile cards
+     * @param turn  0 if game is clockwise  and 1 if anticlockwise
+     * @param playerTurn
+     * @param choose 1 if play online and 2 if game is play with freinds
+     */
     public void printPlayground(ArrayList<Player> players, LinkedList<Card> cards, int turn, int playerTurn,
             int choose) {
         Iterator<Card> it;

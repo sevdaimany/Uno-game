@@ -9,23 +9,22 @@ public class Uno{
          while(true){
              menu();
           int choose = sc.nextInt();
-          if(choose == 1){
+          if(choose == 1 || choose == 2){
             game = new Game();
-            game.game();
+            game.game(choose);
           }
-          else if(choose == 2){
+          else if(choose == 3){
               clearScreen();
               System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   "+" EndGame.");
               return;
           }
-             
-         }
+        }
     }
 
     public static void menu(){
         clearScreen();
         System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"Please choose:"+ConsoleColors.RESET);
-        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"1)Play online"+ConsoleColors.RESET+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"2)End game."+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.RESET);
+        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"1)Play online"+ConsoleColors.RESET+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"2)play with friends."+ConsoleColors.RESET+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"3)End game."+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.RESET);
     }
 
     public static void clearScreen() {

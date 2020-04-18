@@ -30,7 +30,7 @@ public class Game {
         System.out.flush();
     }
 
-    public void game() {
+    public void game(int choose) {
         Playground playground = new Playground();
         int playerTurn = 0;
         int turn = 0;
@@ -40,7 +40,7 @@ public class Game {
         else if (cards.getFirst().getSkip() == 1)
             playerTurn++;
         play(playerTurn);
-        playground.printPlayground(players, cards, turn, playerTurn);
+        playground.printPlayground(players, cards, turn, playerTurn, choose);
 
         int m = 0;
 
@@ -52,7 +52,7 @@ public class Game {
                  */
                 if (m > 10 && m < 20) {
                     for (int i = 0; i < 4 * (m - 10); i++) {
-                        players.get(playerTurn).addCard(cards.getLast());
+                        players.get(playerTurn).getCards().add(cards.getLast());
                         cards.removeLast();
                     }
                     if (turn == 0) {
@@ -67,18 +67,18 @@ public class Game {
                     m = 1;
 
                     clearScreen();
-                    playground.printPlayground(players, cards, turn, playerTurn);
+                    playground.printPlayground(players, cards, turn, playerTurn, choose);
                 } else if (m > 20 && m < 30) {
                     for (int i = 0; i < 2 * (m - 20); i++) {
-                        players.get(playerTurn).addCard(cards.getLast());
+                        players.get(playerTurn).getCards().add(cards.getLast());
                         cards.removeLast();
                     }
 
                     clearScreen();
-                    playground.printPlayground(players, cards, turn, playerTurn);
+                    playground.printPlayground(players, cards, turn, playerTurn, choose);
                 } else if (m == 4) {
                     for (int i = 0; i < 4; i++) {
-                        players.get(playerTurn).addCard(cards.getLast());
+                        players.get(playerTurn).getCards().add(cards.getLast());
                         cards.removeLast();
                     }
                     if (turn == 0) {
@@ -93,20 +93,20 @@ public class Game {
                     m = 1;
 
                     clearScreen();
-                    playground.printPlayground(players, cards, turn, playerTurn);
+                    playground.printPlayground(players, cards, turn, playerTurn, choose);
                 }
 
                 if (m == 5) {
                     for (int i = 0; i < 2; i++) {
-                        players.get(playerTurn).addCard(cards.getLast());
+                        players.get(playerTurn).getCards().add(cards.getLast());
                         cards.removeLast();
                     }
 
                     clearScreen();
-                    playground.printPlayground(players, cards, turn, playerTurn);
+                    playground.printPlayground(players, cards, turn, playerTurn, choose);
                 }
 
-                m = choose(playerTurn);
+                m = choose(playerTurn,choose);
 
                 if (m == 0) {
                     if (turn == 0)
@@ -116,7 +116,7 @@ public class Game {
                     m = 1;
 
                 } else if (m == -1) {
-                    players.get(playerTurn).addCard(cards.getLast());
+                    players.get(playerTurn).getCards().add(cards.getLast());
                     cards.removeLast();
                     m = 1;
                 } else if (m == 3) {
@@ -145,9 +145,9 @@ public class Game {
 
                 TimeUnit.SECONDS.sleep(4);
                 clearScreen();
-                playground.printPlayground(players, cards, turn, playerTurn);
+                playground.printPlayground(players, cards, turn, playerTurn, choose);
 
-                if (endOfGame()) {
+                if (checkEndOfGame()) {
                     winner();
                     return;
                 }
@@ -158,7 +158,7 @@ public class Game {
         }
     }
 
-    public void startGame() {
+    private void startGame() {
         addAllCards();
         Collections.shuffle(cards);
         int numPlayers = numPlayers();
@@ -168,7 +168,7 @@ public class Game {
 
         for (int i = 0; i < numPlayers; i++) {
             for (int j = 0; j < 7; j++) {
-                players.get(i).addCard(cards.getFirst());
+                players.get(i).getCards().add(cards.getFirst());
                 cards.removeFirst();
             }
         }
@@ -178,7 +178,7 @@ public class Game {
         }
     }
 
-    public void addAllCards() {
+    private void addAllCards() {
         for (int j = 0; j < 2; j++) {
             for (int i = 1; i < 10; i++) {
                 cards.add(new Card(i, "red", 0, 0, 0, 0, 0));
@@ -249,277 +249,237 @@ public class Game {
         }
     }
 
-    public int numPlayers() {
+    private int numPlayers() {
         Scanner sc = new Scanner(System.in);
         clearScreen();
-        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   " +ConsoleColors.YELLOW_BOLD_BRIGHT+ "Please choose a number of players:(2 < n < 6)"+ConsoleColors.RESET);
+        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   " + ConsoleColors.YELLOW_BOLD_BRIGHT
+                + "Please choose a number of players:(2 < n < 6)" + ConsoleColors.RESET);
         int numPlayer = sc.nextInt();
         this.numplayers = numPlayer;
         return numPlayer;
     }
 
-    public int choose(int player) {
+    private int choose(int player, int chooseMenu) {
 
-        if (player == 0) {
-            if (checkPlay() == false)
-                return -1;
-
-            Scanner sc = new Scanner(System.in);
-            System.out.println(ConsoleColors.WHITE_BOLD_BRIGHT+"please choose your card: "+ConsoleColors.RESET);
-            int choose = sc.nextInt();
-            while (!check(choose - 1)) {
-                System.out.println(ConsoleColors.WHITE_BOLD_BRIGHT+"please choose another card: "+ConsoleColors.RESET);
-                choose = sc.nextInt();
-            }
-
-            cards.addFirst(players.get(0).getCards().get(choose - 1));
-            players.get(0).getCards().remove(choose - 1);
-            if (cards.getFirst().getBlackActive4() == 1 || cards.getFirst().getBlackActive() == 1) {
-                sc.nextLine();
-                System.out.println(ConsoleColors.WHITE_BOLD_BRIGHT+"Please choose a color: "+ConsoleColors.RESET);
-                String color = sc.nextLine();
-                cards.getFirst().setColor(color);
-            }
-
-            if (cards.getFirst().getReverse() == 1)
-                return 0;
-            else if (cards.getFirst().getBlackActive4() == 1 && cards.get(1).getBlackActive4() == 1) {
-                int n = 10;
-                Iterator<Card> it5 = cards.iterator();
-                while (it5.hasNext()) {
-                    if (it5.next().getBlackActive4() == 1) {
-                        n++;
-                    } else
-                        break;
-                }
+        if (chooseMenu == 1) {
+            if (player == 0) {
+                int n = playYourTurn(0);
                 return n;
-            } else if (cards.getFirst().getTakeTwo() == 1 && cards.get(1).getTakeTwo() == 1) {
-                int n = 20;
-                Iterator<Card> it6 = cards.iterator();
-                while (it6.hasNext()) {
-                    if (it6.next().getTakeTwo() == 1) {
-                        n++;
-                    } else
-                        break;
+
+            } else {
+                Iterator<Card> it = players.get(player).getCards().iterator();
+                Random random = new Random();
+                int rand = random.nextInt(4);
+                String color = "red";
+                if (rand == 0)
+                    color = "red";
+                else if (rand == 1)
+                    color = "blue";
+                else if (rand == 2)
+                    color = "green";
+                else if (rand == 3)
+                    color = "yellow";
+
+                if (cards.getFirst().getBlackActive4() == 1) {
+                    while (it.hasNext()) {
+                        Card card = it.next();
+                        if (card.getBlackActive4() == 1) {
+                            int n = 10;
+                            cards.addFirst(card);
+                            players.get(player).getCards().remove(card);
+                            cards.getFirst().setColor(color);
+                            Iterator<Card> it5 = cards.iterator();
+                            while (it5.hasNext()) {
+                                if (it5.next().getBlackActive4() == 1) {
+                                    n++;
+                                } else
+                                    break;
+                            }
+                            return n;
+                        }
+
+                    }
+                } else if (cards.getFirst().getTakeTwo() == 1) {
+                    it = players.get(player).getCards().iterator();
+                    while (it.hasNext()) {
+                        Card card = it.next();
+                        if (card.getTakeTwo() == 1) {
+                            int n = 20;
+                            cards.addFirst(card);
+                            players.get(player).getCards().remove(card);
+                            Iterator<Card> it6 = cards.iterator();
+                            while (it6.hasNext()) {
+                                if (it6.next().getTakeTwo() == 1) {
+                                    n++;
+                                } else
+                                    break;
+                            }
+                            return n;
+                        }
+
+                    }
                 }
-                return n;
-            } else if (cards.getFirst().getSkip() == 1)
-                return 3;
-            else if (cards.getFirst().getTakeTwo() == 1) {
-                return 5;
-            } else if (cards.getFirst().getBlackActive4() == 1)
-                return 4;
-            else
-                return 1;
 
-        } else {
-            Iterator<Card> it = players.get(player).getCards().iterator();
-            Random random = new Random();
-            int rand = random.nextInt(4);
-            String color = "red";
-            if (rand == 0)
-                color = "red";
-            else if (rand == 1)
-                color = "blue";
-            else if (rand == 2)
-                color = "green";
-            else if (rand == 3)
-                color = "yellow";
+                else if (cards.getFirst().getSkip() == 1) {
+                    it = players.get(player).getCards().iterator();
+                    while (it.hasNext()) {
+                        Card card = it.next();
+                        if (card.getSkip() == 1) {
+                            cards.addFirst(card);
+                            players.get(player).getCards().remove(card);
+                            return 3;
+                        }
 
-            if (cards.getFirst().getBlackActive4() == 1) {
+                    }
+                }
+
+                else if (cards.getFirst().getReverse() == 1) {
+                    it = players.get(player).getCards().iterator();
+                    while (it.hasNext()) {
+                        Card card = it.next();
+                        if (card.getReverse() == 1) {
+                            cards.addFirst(card);
+                            players.get(player).getCards().remove(card);
+                            return 0;
+                        }
+
+                    }
+                } else {
+                    it = players.get(player).getCards().iterator();
+                    while (it.hasNext()) {
+                        Card card = it.next();
+                        if (card.getDigital() >= 0 && card.getDigital() == cards.getFirst().getDigital()) {
+                            cards.addFirst(card);
+                            players.get(player).getCards().remove(card);
+                            return 1;
+                        }
+
+                        if (card.getColor().equals(cards.getFirst().getColor())) {
+                            cards.addFirst(card);
+                            players.get(player).getCards().remove(card);
+                            if (cards.getFirst().getReverse() == 1)
+                                return 0;
+
+                            else if (cards.getFirst().getSkip() == 1)
+                                return 3;
+
+                            else if (cards.getFirst().getTakeTwo() == 1)
+                                return 5;
+                            else
+                                return 1;
+                        }
+                    }
+                }
+                it = players.get(player).getCards().iterator();
                 while (it.hasNext()) {
                     Card card = it.next();
-                    if (card.getBlackActive4() == 1) {
-                        int n = 10;
+                    if (card.getBlackActive() == 1) {
                         cards.addFirst(card);
                         players.get(player).getCards().remove(card);
                         cards.getFirst().setColor(color);
-                        Iterator<Card> it5 = cards.iterator();
-                        while (it5.hasNext()) {
-                            if (it5.next().getBlackActive4() == 1) {
-                                n++;
-                            } else
-                                break;
-                        }
-                        return n;
-                    }
-
-                }
-            } else if (cards.getFirst().getTakeTwo() == 1) {
-                it = players.get(player).getCards().iterator();
-                while (it.hasNext()) {
-                    Card card = it.next();
-                    if (card.getTakeTwo() == 1) {
-                        int n = 20;
-                        cards.addFirst(card);
-                        players.get(player).getCards().remove(card);
-                        Iterator<Card> it6 = cards.iterator();
-                        while (it6.hasNext()) {
-                            if (it6.next().getTakeTwo() == 1) {
-                                n++;
-                            } else
-                                break;
-                        }
-                        return n;
-                    }
-
-                }
-            }
-
-            else if (cards.getFirst().getSkip() == 1) {
-                it = players.get(player).getCards().iterator();
-                while (it.hasNext()) {
-                    Card card = it.next();
-                    if (card.getSkip() == 1) {
-                        cards.addFirst(card);
-                        players.get(player).getCards().remove(card);
-                        return 3;
-                    }
-
-                }
-            }
-
-            else if (cards.getFirst().getReverse() == 1) {
-                it = players.get(player).getCards().iterator();
-                while (it.hasNext()) {
-                    Card card = it.next();
-                    if (card.getReverse() == 1) {
-                        cards.addFirst(card);
-                        players.get(player).getCards().remove(card);
-                        return 0;
-                    }
-
-                }
-            } else {
-                it = players.get(player).getCards().iterator();
-                while (it.hasNext()) {
-                    Card card = it.next();
-                    if (card.getDigital() >= 0 && card.getDigital() == cards.getFirst().getDigital()) {
-                        cards.addFirst(card);
-                        players.get(player).getCards().remove(card);
                         return 1;
                     }
+                }
 
-                    if (card.getColor().equals(cards.getFirst().getColor())) {
+                it = players.get(player).getCards().iterator();
+                while (it.hasNext()) {
+                    Card card = it.next();
+                    if (card.getBlackActive4() == 1) {
                         cards.addFirst(card);
                         players.get(player).getCards().remove(card);
-                        if (cards.getFirst().getReverse() == 1)
-                            return 0;
-
-                        else if (cards.getFirst().getSkip() == 1)
-                            return 3;
-
-                        else if (cards.getFirst().getTakeTwo() == 1)
-                            return 5;
-                        else
-                            return 1;
+                        cards.getFirst().setColor(color);
+                        return 4;
                     }
                 }
-            }
-            it = players.get(player).getCards().iterator();
-            while (it.hasNext()) {
-                Card card = it.next();
-                if (card.getBlackActive() == 1) {
-                    cards.addFirst(card);
-                    players.get(player).getCards().remove(card);
-                    cards.getFirst().setColor(color);
-                    return 1;
-                }
-            }
 
-            it = players.get(player).getCards().iterator();
-            while (it.hasNext()) {
-                Card card = it.next();
-                if (card.getBlackActive4() == 1) {
-                    cards.addFirst(card);
-                    players.get(player).getCards().remove(card);
-                    cards.getFirst().setColor(color);
-                    return 4;
-                }
+                return -1;
             }
-
-            return -1;
+        }
+        else{
+            int n = playYourTurn(player);
+            return n;
         }
     }
 
-    public void play(int turn) {
+    private void play(int turn) {
 
         if (cards.getFirst().getBlackActive4() == 1) {
             for (int i = 0; i < 4; i++) {
-                players.get(turn).addCard(cards.getLast());
+                players.get(turn).getCards().add(cards.getLast());
                 cards.removeLast();
             }
         }
 
         else if (cards.getFirst().getTakeTwo() == 1) {
             for (int i = 0; i < 2; i++) {
-                players.get(turn).addCard(cards.getLast());
+                players.get(turn).getCards().add(cards.getLast());
                 cards.removeLast();
             }
         }
 
     }
 
-    public boolean check(int numCard) {
-        if (players.get(0).getCards().get(numCard).getBlackActive4() == 1 && cards.getFirst().getBlackActive4() == 1)
+    private boolean check(int numCard, int player) {
+        if (players.get(player).getCards().get(numCard).getBlackActive4() == 1
+                && cards.getFirst().getBlackActive4() == 1)
             return true;
 
-        else if (players.get(0).getCards().get(numCard).getBlackActive4() == 1
-                || players.get(0).getCards().get(numCard).getBlackActive() == 1) {
-            if (!check())
+        else if (players.get(player).getCards().get(numCard).getBlackActive4() == 1
+                || players.get(player).getCards().get(numCard).getBlackActive() == 1) {
+            if (!check(player))
                 return true;
 
         }
-        if (players.get(0).getCards().get(numCard).getReverse() == 1 && cards.getFirst().getReverse() == 1)
+        if (players.get(player).getCards().get(numCard).getReverse() == 1 && cards.getFirst().getReverse() == 1)
             return true;
-        else if (players.get(0).getCards().get(numCard).getTakeTwo() == 1 && cards.getFirst().getTakeTwo() == 1)
+        else if (players.get(player).getCards().get(numCard).getTakeTwo() == 1 && cards.getFirst().getTakeTwo() == 1)
             return true;
-        else if (players.get(0).getCards().get(numCard).getSkip() == 1 && cards.getFirst().getSkip() == 1)
+        else if (players.get(player).getCards().get(numCard).getSkip() == 1 && cards.getFirst().getSkip() == 1)
             return true;
-        else if (players.get(0).getCards().get(numCard).getDigital() >= 0
-                && players.get(0).getCards().get(numCard).getDigital() == cards.getFirst().getDigital())
+        else if (players.get(player).getCards().get(numCard).getDigital() >= 0
+                && players.get(player).getCards().get(numCard).getDigital() == cards.getFirst().getDigital())
             return true;
-        else if (players.get(0).getCards().get(numCard).getColor().equals(cards.getFirst().getColor()))
+        else if (players.get(player).getCards().get(numCard).getColor().equals(cards.getFirst().getColor()))
             return true;
 
         return false;
 
     }
 
-    public boolean check() {
-        int n = players.get(0).getCards().size();
+    private boolean check(int player) {
+        int n = players.get(player).getCards().size();
         for (int i = 0; i < n; i++) {
-            if (players.get(0).getCards().get(i).getReverse() == 1 && cards.getFirst().getReverse() == 1)
+            if (players.get(player).getCards().get(i).getReverse() == 1 && cards.getFirst().getReverse() == 1)
                 return true;
-            else if (players.get(0).getCards().get(i).getTakeTwo() == 1 && cards.getFirst().getTakeTwo() == 1)
+            else if (players.get(player).getCards().get(i).getTakeTwo() == 1 && cards.getFirst().getTakeTwo() == 1)
                 return true;
-            else if (players.get(0).getCards().get(i).getSkip() == 1 && cards.getFirst().getSkip() == 1)
+            else if (players.get(player).getCards().get(i).getSkip() == 1 && cards.getFirst().getSkip() == 1)
                 return true;
-            else if (players.get(0).getCards().get(i).getDigital() >= 0
-                    && players.get(0).getCards().get(i).getDigital() == cards.getFirst().getDigital())
+            else if (players.get(player).getCards().get(i).getDigital() >= 0
+                    && players.get(player).getCards().get(i).getDigital() == cards.getFirst().getDigital())
                 return true;
-            else if (players.get(0).getCards().get(i).getColor().equals(cards.getFirst().getColor()))
+            else if (players.get(player).getCards().get(i).getColor().equals(cards.getFirst().getColor()))
                 return true;
 
         }
         return false;
     }
 
-    public boolean checkPlay() {
-        int n = players.get(0).getCards().size();
+    private boolean checkPlay(int player) {
+        int n = players.get(player).getCards().size();
         for (int i = 0; i < n; i++) {
-            if (players.get(0).getCards().get(i).getBlackActive4() == 1
-                    || players.get(0).getCards().get(i).getBlackActive() == 1)
+            if (players.get(player).getCards().get(i).getBlackActive4() == 1
+                    || players.get(player).getCards().get(i).getBlackActive() == 1)
                 return true;
         }
 
-        if (check())
+        if (check(player))
             return true;
 
         return false;
     }
 
-    public boolean endOfGame() {
+    private boolean checkEndOfGame() {
         int numPlayer = players.size();
         for (int i = 0; i < numPlayer; i++) {
             if (players.get(i).getCards().size() == 0)
@@ -528,7 +488,7 @@ public class Game {
         return false;
     }
 
-    public void winner() {
+    private void winner() {
         ArrayList<Integer> scores = new ArrayList<Integer>();
         int numPlayers = players.size();
         for (int i = 0; i < numPlayers; i++) {
@@ -547,17 +507,16 @@ public class Game {
                 numwinners.add(i);
         }
 
-        
-        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   " );
+        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   ");
         for (int i = 0; i < numwinners.size(); i++) {
-            System.out.print(ConsoleColors.PURPLE_BOLD_BRIGHT +"player" + (numwinners.get(i) + 1) + ", ");
+            System.out.print(ConsoleColors.PURPLE_BOLD_BRIGHT + "player" + (numwinners.get(i) + 1) + ", ");
         }
         System.out.println("win the game." + ConsoleColors.RESET);
         Scanner sc = new Scanner(System.in);
         sc.nextLine();
     }
 
-    public int scores(Card card) {
+    private int scores(Card card) {
         int score = 0;
         if (card.getDigital() >= 0)
             score = card.getDigital();
@@ -569,11 +528,65 @@ public class Game {
         return score;
     }
 
-    public void printScores(ArrayList<Integer> scores) {
+    private void printScores(ArrayList<Integer> scores) {
         clearScreen();
         for (int i = 0; i < players.size(); i++) {
-            System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   " +ConsoleColors.CYAN_BOLD_BRIGHT +"Player" + (i + 1) + " scores: " + scores.get(i) + ConsoleColors.RESET);
+            System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   " + ConsoleColors.CYAN_BOLD_BRIGHT + "Player" + (i + 1)
+                    + " scores: " + scores.get(i) + ConsoleColors.RESET);
         }
     }
 
+    private int playYourTurn(int player) {
+        if (checkPlay(player) == false)
+            return -1;
+
+        Scanner sc = new Scanner(System.in);
+        System.out.println(ConsoleColors.WHITE_BOLD_BRIGHT + "please choose your card: " + ConsoleColors.RESET);
+        int choose = sc.nextInt();
+        while (!check(choose - 1, player)) {
+            System.out.println(ConsoleColors.WHITE_BOLD_BRIGHT + "please choose another card: " + ConsoleColors.RESET);
+            choose = sc.nextInt();
+        }
+
+        cards.addFirst(players.get(player).getCards().get(choose - 1));
+        players.get(player).getCards().remove(choose - 1);
+        if (cards.getFirst().getBlackActive4() == 1 || cards.getFirst().getBlackActive() == 1) {
+            sc.nextLine();
+            System.out.println(ConsoleColors.WHITE_BOLD_BRIGHT + "Please choose a color: " + ConsoleColors.RESET);
+            String color = sc.nextLine();
+            cards.getFirst().setColor(color);
+        }
+
+        if (cards.getFirst().getReverse() == 1)
+            return 0;
+        else if (cards.getFirst().getBlackActive4() == 1 && cards.get(1).getBlackActive4() == 1) {
+            int n = 10;
+            Iterator<Card> it5 = cards.iterator();
+            while (it5.hasNext()) {
+                if (it5.next().getBlackActive4() == 1) {
+                    n++;
+                } else
+                    break;
+            }
+            return n;
+        } else if (cards.getFirst().getTakeTwo() == 1 && cards.get(1).getTakeTwo() == 1) {
+            int n = 20;
+            Iterator<Card> it6 = cards.iterator();
+            while (it6.hasNext()) {
+                if (it6.next().getTakeTwo() == 1) {
+                    n++;
+                } else
+                    break;
+            }
+            return n;
+        } else if (cards.getFirst().getSkip() == 1)
+            return 3;
+        else if (cards.getFirst().getTakeTwo() == 1) {
+            return 5;
+        } else if (cards.getFirst().getBlackActive4() == 1)
+            return 4;
+        else
+            return 1;
+
+    }
 }

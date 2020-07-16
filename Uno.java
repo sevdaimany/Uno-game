@@ -36,7 +36,7 @@ public class Uno{
     public static void menu(){
         clearScreen();
         System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"Please choose:"+ConsoleColors.RESET);
-        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"1)Play online"+ConsoleColors.RESET+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"2)play with friends."+ConsoleColors.RESET+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"3)End game."+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.RESET);
+        System.out.println("\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"1)Play with Ai"+ConsoleColors.RESET+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"2)play with friends."+ConsoleColors.RESET+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.GREEN_BOLD_BRIGHT+"3)End game."+"\n\n\t\t\t\t\t\t\t\t\t\t   "+ConsoleColors.RESET);
     }
 
     public static void clearScreen() {

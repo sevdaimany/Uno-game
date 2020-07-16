@@ -88,6 +88,7 @@ public class Game {
                         if (playerTurn == numplayers)
                             playerTurn = 0;
                     } else if (turn == 1) {
+                        
                         playerTurn--;
                         if (playerTurn == -1)
                             playerTurn = numplayers - 1;
